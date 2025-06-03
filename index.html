@@ -87,7 +87,23 @@
     </section>
   </main>
 
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
   <script>
+    window.TrackJS && TrackJS.install({ 
+        token: "68a9e090c2674f3c88786f60eb120bf6"
+    // for more configuration options, see https://docs.trackjs.com
+    });
+    TrackJS.track('Testing TrackJS!');
+  </script>
+
+  <script>
+    class BooSubtractionError extends Error {
+        constructor(message) {
+            super(message);
+            this.name = "BooSubtraction";
+        }
+    }
+
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
         e.preventDefault();
@@ -95,7 +111,19 @@
         let firstNum = document.querySelector('#first-num').value;
         let secondNum = document.querySelector('#second-num').value;
         let operator = document.querySelector('#operator').value;
-        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+        try {
+            if (operator === "/" && secondNum === "0") {
+                throw new RangeError("Don't divide by 0");
+            } else if (operator === "-") {
+                throw new BooSubtractionError("I don't like subtraction.");
+            }
+            output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+        } catch (e) {
+            TrackJS.track(e);
+            alert(e.name + ": " + e.message);
+        } finally {
+            alert("Operation attempt complete");
+        }
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
@@ -168,6 +196,16 @@
         }
         deeper();
     });
+
+    errorBtns[14].addEventListener('click', e => {
+        foo();
+    });
+
+    window.onerror = () => {
+        console.log ("Global Error Triggered");
+        return true;
+    }
+
 
   </script>
 </body>
