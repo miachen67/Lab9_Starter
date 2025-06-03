@@ -87,21 +87,126 @@
     </section>
   </main>
 
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
   <script>
+    window.TrackJS && TrackJS.install({ 
+        token: "68a9e090c2674f3c88786f60eb120bf6"
+    // for more configuration options, see https://docs.trackjs.com
+    });
+    TrackJS.track('Testing TrackJS!');
+  </script>
+
+  <script>
+    class BooSubtractionError extends Error {
+        constructor(message) {
+            super(message);
+            this.name = "BooSubtraction";
+        }
+    }
+
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
-      e.preventDefault();
-      let output = document.querySelector('output');
-      let firstNum = document.querySelector('#first-num').value;
-      let secondNum = document.querySelector('#second-num').value;
-      let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+        e.preventDefault();
+        let output = document.querySelector('output');
+        let firstNum = document.querySelector('#first-num').value;
+        let secondNum = document.querySelector('#second-num').value;
+        let operator = document.querySelector('#operator').value;
+        try {
+            if (operator === "/" && secondNum === "0") {
+                throw new RangeError("Don't divide by 0");
+            } else if (operator === "-") {
+                throw new BooSubtractionError("I don't like subtraction.");
+            }
+            output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+        } catch (e) {
+            TrackJS.track(e);
+            alert(e.name + ": " + e.message);
+        } finally {
+            alert("Operation attempt complete");
+        }
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
     // Start your code here
     // You may move this JS to another file if you wish
+  
+    errorBtns[0].addEventListener('click', e => {
+        let output = document.querySelector('output').value;
+        console.log("Console Log Demo");
+    });
+
+    errorBtns[1].addEventListener('click', e => {
+        console.error("Console Error Demo");
+    });  
+    
+    errorBtns[2].addEventListener('click', e => {
+        console.count("Count");
+    });
+
+    errorBtns[3].addEventListener('click', e => {
+        console.warn("Console Warn");
+    });
+
+    errorBtns[4].addEventListener('click', e => {
+        let output = document.querySelector('output').value;
+        console.assert(output != "", "output should not be empty");
+    });
+
+    errorBtns[5].addEventListener('click', e => {
+        console.clear(e);
+    });
+
+    errorBtns[6].addEventListener('click', e => {
+        console.dir(e);
+    });
+
+    errorBtns[7].addEventListener('click', e => {
+        console.dirxml(e);
+    });
+
+    errorBtns[8].addEventListener('click', e => {
+        console.group();
+    });
+
+    errorBtns[9].addEventListener('click', e => {
+        console.groupEnd();
+    });
+
+    errorBtns[10].addEventListener('click', e => {
+        const students = [
+            { pid: 1, student: 'Bobby' },
+            { pid: 2, student: 'John' },
+            { pid: 3, student: 'Jane' },
+        ];
+        console.table(students);
+    });
+    
+    errorBtns[11].addEventListener('click', e => {
+        console.time("Timer Button");
+    });
+
+    errorBtns[12].addEventListener('click', e => {
+        console.timeEnd("Timer Button");
+    });
+
+    errorBtns[13].addEventListener('click', e => {
+        function deeper() {
+            console.trace();
+        }
+        deeper();
+    });
+
+    errorBtns[14].addEventListener('click', e => {
+        foo();
+    });
+
+    window.onerror = () => {
+        console.log ("Global Error Triggered");
+        return true;
+    }
+
+
   </script>
 </body>
 
